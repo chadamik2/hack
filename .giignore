@@ -1,0 +1,72 @@
+# ==== Общие ====
+*.log
+*.tmp
+*.swp
+*.swo
+
+# ОС
+.DS_Store
+Thumbs.db
+
+# IDE / редакторы
+.vscode/
+.idea/
+*.iml
+
+# ==== Backend (Python / FastAPI) ====
+# виртуальные окружения
+venv/
+.venv/
+env/
+ENV/
+
+# байткод Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# кеши и артефакты
+.mypy_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+dist/
+build/
+
+# локальные базы данных
+db.sqlite3
+*.sqlite3
+
+# конфиги / секреты
+.env
+.env.*
+*.env
+
+# Jupyter
+.ipynb_checkpoints/
+
+# ==== Frontend (React) ====
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# сборка
+frontend/build/
+build/
+
+# локальные env-файлы CRA
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+
+# ==== Прочее ====
+# архивы / дампы / временные данные
+*.zip
+*.tar
+*.tar.gz
+*.gz
+*.bz2
+*.7z
