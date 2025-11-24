@@ -1,29 +1,32 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 function Layout({ children }) {
   return (
-    <div style={{ fontFamily: "sans-serif", padding: "20px" }}>
-      <header style={{ marginBottom: "20px" }}>
-        <h1>Аналитика самовозгорания угля</h1>
-        <nav style={{ marginTop: "10px", marginBottom: "10px" }}>
-          <Link to="/" style={{ marginRight: "15px" }}>
+    <div className="app-root">
+      <header className="app-header">
+        <h1 className="app-header-title">Аналитика самовозгорания угля</h1>
+        <p className="app-header-subtitle">
+          Загрузка данных, прогноз самовозгораний и оценка качества модели
+        </p>
+
+        <nav className="app-nav">
+          <NavLink className="app-nav-link" to="/">
             Главная
-          </Link>
-          <Link to="/upload" style={{ marginRight: "15px" }}>
+          </NavLink>
+          <NavLink className="app-nav-link" to="/upload">
             Загрузить данные
-          </Link>
-          <Link to="/calendar" style={{ marginRight: "15px" }}>
+          </NavLink>
+          <NavLink className="app-nav-link" to="/calendar">
             Календарь
-          </Link>
-          <Link to="/metrics">
+          </NavLink>
+          <NavLink className="app-nav-link" to="/metrics">
             Метрики
-          </Link>
+          </NavLink>
         </nav>
-        <hr />
       </header>
 
-      <main>{children}</main>
+      <main className="app-main">{children}</main>
     </div>
   );
 }

@@ -6,6 +6,7 @@ function MetricsPage() {
   const [firesFile, setFiresFile] = useState(null);
 
   const [status, setStatus] = useState("");
+  const [statusType, setStatusType] = useState("ok");
   const [loading, setLoading] = useState(false);
   const [metrics, setMetrics] = useState(null);
 
@@ -13,11 +14,13 @@ function MetricsPage() {
     e.preventDefault();
 
     if (!date) {
-      setStatus("Укажите дату");
+      setStatusType("error");
+      setStatus("Укажите дату прогноза.");
       return;
     }
     if (!firesFile) {
-      setStatus("Выберите файл fires.csv");
+      setStatusType("error");
+      setStatus("Выберите файл fires.csv.");
       return;
     }
 
@@ -28,7 +31,10 @@ function MetricsPage() {
 
       const data = await evaluateFires(date, firesFile);
       setMetrics(data);
+      setStatusType("ok");
+      setStatus("Метрики успешно рассчитаны.");
     } catch (err) {
+      setStatusType("error");
       setStatus(`Ошибка: ${err.message}`);
     } finally {
       setLoading(false);
@@ -37,49 +43,79 @@ function MetricsPage() {
 
   return (
     <div>
-      <h2>Загрузить новые данные о возгорании и сравнить метрики</h2>
+      <div className="card" style={{ marginBottom: 16 }}>
+        <div className="card-header">
+          <div className="card-icon">📊</div>
+          <div>
+            <h2 className="card-title">Оценка качества модели</h2>
+            <p className="card-description">
+              Загрузите реальные данные о пожарах и сравните их с предсказаниями
+              модели. Сейчас backend возвращает метрику{" "}
+              <code>accuracy_le_2_days</code> — долю штабелей, для которых
+              предсказанная дата попала в окно ±2 дня от факта.
+            </p>
+          </div>
+        </div>
 
-      <form onSubmit={handleSubmit} style={{ marginBottom: "16px" }}>
-        <div style={{ marginBottom: "8px" }}>
-          <label>
-            Дата прогноза:{" "}
+        <form onSubmit={handleSubmit} className="card-footer">
+          <div className="form-row">
+            <span className="form-label">Дата прогноза:</span>
             <input
+              className="input-date"
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
             />
-          </label>
-        </div>
-
-        <div style={{ marginBottom: "8px" }}>
-          <label>
-            Файл fires.csv:{" "}
+          </div>
+          <div className="form-row">
+            <span className="form-label">Файл fires.csv:</span>
             <input
+              className="input-file"
               type="file"
               accept=".csv"
               onChange={(e) => setFiresFile(e.target.files[0] || null)}
             />
-          </label>
-        </div>
+          </div>
+          <button type="submit" className="btn" disabled={loading}>
+            {loading ? "Считаем..." : "Рассчитать метрики"}
+          </button>
+        </form>
+      </div>
 
-        <button type="submit" disabled={loading}>
-          Рассчитать метрики
-        </button>
-      </form>
-
-      {loading && <p>Загрузка...</p>}
-      {status && <p>{status}</p>}
+      {status && (
+        <p
+          className={
+            "text-status " + (statusType === "error" ? "error" : "ok")
+          }
+        >
+          {status}
+        </p>
+      )}
 
       {metrics && (
-        <div>
-          <h3>Результаты</h3>
-          <p>
-            Accuracy (попадание в интервал ≤ 2 дня):{" "}
-            {metrics.accuracy_le_2_days !== undefined &&
-            metrics.accuracy_le_2_days !== null
-              ? Number(metrics.accuracy_le_2_days).toFixed(3)
-              : "нет данных"}
-          </p>
+        <div className="card">
+          <div className="card-header">
+            <div className="card-icon">✅</div>
+            <div>
+              <h3 className="card-title">Результаты</h3>
+              <p className="card-description">
+                Основная метрика — попадание в интервал ±2 дня между фактом и
+                предсказанием.
+              </p>
+            </div>
+          </div>
+
+          <div className="card-footer">
+            <p className="text-muted">
+              Accuracy (≤ 2 дня):{" "}
+              <strong>
+                {metrics.accuracy_le_2_days !== undefined &&
+                metrics.accuracy_le_2_days !== null
+                  ? Number(metrics.accuracy_le_2_days).toFixed(3)
+                  : "нет данных"}
+              </strong>
+            </p>
+          </div>
         </div>
       )}
     </div>

@@ -7,6 +7,7 @@ function UploadDataPage() {
   const [temperatureFile, setTemperatureFile] = useState(null);
 
   const [status, setStatus] = useState("");
+  const [statusType, setStatusType] = useState("ok");
   const [loading, setLoading] = useState(false);
 
   async function handleUpload(type) {
@@ -29,77 +30,106 @@ function UploadDataPage() {
       }
 
       if (!file) {
-        setStatus("Выберите файл перед загрузкой");
+        setStatusType("error");
+        setStatus("Выберите файл перед загрузкой.");
         return;
       }
 
       const response = await uploadCsv(path, file);
-      setStatus(
-        `Загрузка успешна: ${response.rows_added ?? "n/a"} строк добавлено`
-      );
+      const added = response.rows_added ?? "0";
+      setStatusType("ok");
+      setStatus(`Загрузка успешна: добавлено строк — ${added}.`);
     } catch (err) {
+      setStatusType("error");
       setStatus(`Ошибка: ${err.message}`);
     } finally {
       setLoading(false);
     }
   }
 
-  const fieldStyle = { marginBottom: "16px" };
+  function renderBlock(title, description, stateKey, setStateKey, type) {
+    return (
+      <div className="card">
+        <div className="card-header">
+          <div className="card-icon">
+            {type === "supplies" ? "📦" : type === "weather" ? "🌦️" : "🌡️"}
+          </div>
+          <div>
+            <h3 className="card-title">{title}</h3>
+            <p className="card-description">{description}</p>
+          </div>
+        </div>
+
+        <div className="card-footer">
+          <div className="form-row">
+            <span className="form-label">Файл:</span>
+            <input
+              className="input-file"
+              type="file"
+              accept=".csv"
+              onChange={(e) => setStateKey(e.target.files[0] || null)}
+            />
+          </div>
+          <button
+            className="btn"
+            onClick={() => handleUpload(type)}
+            disabled={loading || !stateKey}
+          >
+            {loading ? "Загрузка..." : "Загрузить"}
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
-      <h2>Загрузить текущие данные о хранении угля</h2>
-
-      <div style={fieldStyle}>
-        <h3>supplies.csv</h3>
-        <input
-          type="file"
-          accept=".csv"
-          onChange={(e) => setSuppliesFile(e.target.files[0] || null)}
-        />
-        <button
-          onClick={() => handleUpload("supplies")}
-          disabled={loading || !suppliesFile}
-          style={{ marginLeft: "8px" }}
-        >
-          Загрузить supplies
-        </button>
+      <div className="card" style={{ marginBottom: 20 }}>
+        <div className="card-header">
+          <div className="card-icon">⬆️</div>
+          <div>
+            <h2 className="card-title">Загрузка текущих данных</h2>
+            <p className="card-description">
+              Загрузите актуальные данные по складу, погоде и температуре,
+              чтобы модель могла строить корректные прогнозы.
+            </p>
+          </div>
+        </div>
       </div>
 
-      <div style={fieldStyle}>
-        <h3>weather_*.csv</h3>
-        <input
-          type="file"
-          accept=".csv"
-          onChange={(e) => setWeatherFile(e.target.files[0] || null)}
-        />
-        <button
-          onClick={() => handleUpload("weather")}
-          disabled={loading || !weatherFile}
-          style={{ marginLeft: "8px" }}
-        >
-          Загрузить weather
-        </button>
-      </div>
+      {renderBlock(
+        "supplies.csv — операции и остатки",
+        "Файл с выгрузкой и отгрузкой угля по складам и штабелям.",
+        suppliesFile,
+        setSuppliesFile,
+        "supplies"
+      )}
 
-      <div style={fieldStyle}>
-        <h3>temperature.csv</h3>
-        <input
-          type="file"
-          accept=".csv"
-          onChange={(e) => setTemperatureFile(e.target.files[0] || null)}
-        />
-        <button
-          onClick={() => handleUpload("temperature")}
-          disabled={loading || !temperatureFile}
-          style={{ marginLeft: "8px" }}
-        >
-          Загрузить temperature
-        </button>
-      </div>
+      {renderBlock(
+        "weather_*.csv — погодные данные",
+        "Файл с погодными наблюдениями (температура воздуха, осадки и т.д.).",
+        weatherFile,
+        setWeatherFile,
+        "weather"
+      )}
 
-      {loading && <p>Загрузка...</p>}
-      {status && <p>{status}</p>}
+      {renderBlock(
+        "temperature.csv — температура в штабелях",
+        "Файл с данными по температуре внутри штабелей.",
+        temperatureFile,
+        setTemperatureFile,
+        "temperature"
+      )}
+
+      {status && (
+        <p
+          className={
+            "text-status " + (statusType === "error" ? "error" : "ok")
+          }
+        >
+          {status}
+        </p>
+      )}
     </div>
   );
 }

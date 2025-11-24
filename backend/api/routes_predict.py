@@ -3,7 +3,6 @@ from datetime import datetime, date
 from typing import Dict, Any
 
 from fastapi import APIRouter, HTTPException, Query
-from ml.service import run_fire_prediction_for_date
 from ml.model import FireModel, model  # адаптируй имя под свой класс
 import pandas as pd
 
