@@ -65,6 +65,24 @@ docker compose -p hakaton up --build
 
 Вариант 2 (без Docker):
 
+## Предварительные требования
+
+Для запуска **без Docker** на машине должны быть установлены:
+
+- **Python 3.10+** (вместе с `pip`)
+- **Node.js 16+** и **npm** (ставятся одним установщиком с nodejs.org)
+- (опционально) **Git** — для клонирования репозитория с GitHub
+
+Проверка:
+
+```bash
+python --version
+pip --version
+node --version
+npm --version
+```
+
+
 ```bash
 # backend
 cd backend
