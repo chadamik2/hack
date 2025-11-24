@@ -8,6 +8,7 @@ from data.repository import repo
 from core.config import engine
 import numpy as np
 import catboost
+import sklearn
 
 
 
@@ -495,9 +496,7 @@ class FireModel:
         active_df = active_df.drop(columns=drop_cols, errors="ignore")
         cat_features = [c for c in ["Склад", "Штабель", "coal_type"] if c in X_train.columns]
 
-        from catboost import CatBoostRegressor
-
-        model = CatBoostRegressor(
+        model = catboost.CatBoostRegressor(
             iterations=500,
             depth=5,
             learning_rate=0.03,
@@ -534,7 +533,7 @@ class FireModel:
 
         merged = pred_by_stack.merge(true_by_stack, on=keys, how="inner")
 
-        mae = mean_absolute_error(merged["true_days_to_fire"], merged["pred_days_to_fire"])
+        mae = sklearn.metrics.mean_absolute_error(merged["true_days_to_fire"], merged["pred_days_to_fire"])
 
         return mae
 
@@ -736,7 +735,6 @@ class FireModel:
         active_df = active_df.drop(columns=drop_cols, errors="ignore")
         cat_features = [c for c in ["Склад", "Штабель", "coal_type"] if c in X_train.columns]
 
-        from sklearn.metrics import roc_auc_score, f1_score, accuracy_score
         n0 = (y_train == 0).sum()
         n1 = (y_train == 1).sum()
         w0 = 1.0
@@ -770,7 +768,7 @@ class FireModel:
         scores = []
         for thr in thresholds:
             pred_val = (proba_val >= thr).astype(int)
-            score = f1_score(y_val, pred_val)
+            score = sklearn.metrics.f1_score(y_val, pred_val)
             scores.append(score)
             if score > best_score:
                 best_score = score

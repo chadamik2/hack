@@ -55,7 +55,14 @@ def predict_fires(
     raw_predictions = model.predict(target_date)
 
     # Приводим к JSON-формату
-    predictions = _serialize_predictions(raw_predictions)
+    pr = (
+    raw_predictions
+    .set_index('Штабель')['days_to_fire']
+    .dt.strftime('%Y-%m-%d')
+    .to_dict()
+    )
+
+    predictions = _serialize_predictions(pr)
 
     return {
         "input_date": target_date.isoformat(),
