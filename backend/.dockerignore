@@ -1,0 +1,11 @@
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.venv
+.idea
+.git
+.gitignore
+db.sqlite3
+frontend
+node_modules
