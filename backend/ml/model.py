@@ -282,7 +282,7 @@ class FireModel:
             active_df.groupby("Штабель", as_index=False)["days_to_fire"]
             .mean().round()
         )
-        res_reg["fire_date"] = (
+        res_reg["days_to_fire"] = (
                 pd.to_datetime(CURRENT_DATE)
                 + pd.to_timedelta(res_reg["days_to_fire"], unit="D")
         )
