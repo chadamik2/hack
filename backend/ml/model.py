@@ -294,6 +294,7 @@ class FireModel:
             date: datetime.date,
             fires: pd.DataFrame,
     ) -> Dict[str, Any]:
+        repo.upload_fires(fires)
         data = self._load_feature_data()
         fires = data["fires"]
         temperature = data["temperature"]
@@ -736,9 +737,6 @@ class FireModel:
         active_df = active_df.drop(columns=drop_cols, errors="ignore")
         cat_features = [c for c in ["Склад", "Штабель", "coal_type"] if c in X_train.columns]
 
-        from catboost import CatBoostClassifier
-        from sklearn.metrics import roc_auc_score, f1_score, accuracy_score
-        import numpy as np
         n0 = (y_train == 0).sum()
         n1 = (y_train == 1).sum()
         w0 = 1.0
@@ -789,11 +787,6 @@ class FireModel:
             "Штабель": "stack_id",
             "fire_within_7d": "will_burn"
         })
-
-        res_cl["will_burn"] = (
-                pd.to_datetime(CURRENT_DATE)
-                + pd.to_timedelta(res_cl["days_to_fire"], unit="D")
-        )
 
         return res_cl
 # Глобальный экземпляр модели (заглушка)
