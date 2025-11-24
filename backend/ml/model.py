@@ -535,7 +535,7 @@ class FireModel:
 
         mae = sklearn.metrics.mean_absolute_error(merged["true_days_to_fire"], merged["pred_days_to_fire"])
 
-        d = mae
+        d = {"MAE" : mae}
         return d
 
 
@@ -736,6 +736,9 @@ class FireModel:
         active_df = active_df.drop(columns=drop_cols, errors="ignore")
         cat_features = [c for c in ["Склад", "Штабель", "coal_type"] if c in X_train.columns]
 
+        from catboost import CatBoostClassifier
+        from sklearn.metrics import roc_auc_score, f1_score, accuracy_score
+        import numpy as np
         n0 = (y_train == 0).sum()
         n1 = (y_train == 1).sum()
         w0 = 1.0
