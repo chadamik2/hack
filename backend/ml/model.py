@@ -276,15 +276,17 @@ class FireModel:
 
         pred_days = np.round(model.predict(active_df))
 
-        active_df["fire_date"] = (
-                pd.to_datetime(CURRENT_DATE)
-                + pd.to_timedelta(active_df["days_to_fire"], unit="D")
-        )
+        active_df["days_to_fire"] = pred_days
 
         res_reg = (
             active_df.groupby("Штабель", as_index=False)["days_to_fire"]
-            .min()
+            .mean().round()
         )
+        res_reg["fire_date"] = (
+                pd.to_datetime(CURRENT_DATE)
+                + pd.to_timedelta(res_reg["days_to_fire"], unit="D")
+        )
+
         return res_reg
 
 
