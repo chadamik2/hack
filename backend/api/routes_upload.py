@@ -1,4 +1,3 @@
-# api/routes_upload.py
 import io
 from enum import Enum
 
@@ -24,11 +23,9 @@ async def upload_csv(
     data_type: DataType,
     file: UploadFile = File(...),
 ):
-    # 1. Проверяем расширение
     if not file.filename.lower().endswith(".csv"):
         raise HTTPException(status_code=400, detail="Ожидается файл в формате .csv")
 
-    # 2. Читаем файл в pandas.DataFrame
     content = await file.read()
     try:
         df = pd.read_csv(io.BytesIO(content))
@@ -38,7 +35,6 @@ async def upload_csv(
     if df.empty:
         raise HTTPException(status_code=400, detail="Файл не содержит данных")
 
-    # 3. Сохраняем в нужную таблицу
     if data_type == DataType.supplies:
         n_rows = repo.upload_supplies(df)
     elif data_type == DataType.weather:
@@ -46,10 +42,8 @@ async def upload_csv(
     elif data_type == DataType.temperature:
         n_rows = repo.upload_temperature(df)
     else:
-        # Enum защищает от этого, но на всякий случай
         raise HTTPException(status_code=400, detail="Неизвестный тип данных")
 
-    # 4. Возвращаем простой ответ
     return {
         "status": "ok",
         "data_type": data_type,

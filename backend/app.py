@@ -1,4 +1,3 @@
-# app.py (в корне проекта)
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 

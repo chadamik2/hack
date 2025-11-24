@@ -1,4 +1,3 @@
-# backend/ml/model.py
 import datetime
 from dataclasses import dataclass
 from typing import Any, Dict
@@ -16,23 +15,15 @@ import sklearn
 @dataclass
 class FirePrediction:
     stack_id: str
-    predicted_fire_date: Any  # datetime.date или datetime.datetime
+    predicted_fire_date: Any
 
 
 class FireModel:
-    """
-    Интерфейс для модели.
-    Реализация обучения и предсказания будет отдельно.
-    """
 
     def __init__(self) -> None:
-        # сюда можно будет загрузить веса/конфиг модели
         pass
 
     def _load_feature_data(self) -> Dict[str, pd.DataFrame]:
-        """
-        Вспомогательный метод: грузим признаки из БД.
-        """
         supplies = pd.read_sql(
             "SELECT * FROM supplies", engine, parse_dates=["date"]
         )
@@ -212,7 +203,7 @@ class FireModel:
                 base_cls["days_to_fire"].notna() &
                 (base_cls["days_to_fire"] >= 0) &
                 (base_cls["days_to_fire"] <= H) &
-                (base_cls["nearest_fire_date"] <= base_cls["date_out"])  # пожар внутри жизни кучи
+                (base_cls["nearest_fire_date"] <= base_cls["date_out"])
         ).astype(int)
         base_cls["fire_within_7d"].value_counts()
         grp = base_cls.groupby(["Склад", "Штабель", "pile_id"])
@@ -451,7 +442,7 @@ class FireModel:
                 base_cls["days_to_fire"].notna() &
                 (base_cls["days_to_fire"] >= 0) &
                 (base_cls["days_to_fire"] <= H) &
-                (base_cls["nearest_fire_date"] <= base_cls["date_out"])  # пожар внутри жизни кучи
+                (base_cls["nearest_fire_date"] <= base_cls["date_out"])
         ).astype(int)
         base_cls["fire_within_7d"].value_counts()
         grp = base_cls.groupby(["Склад", "Штабель", "pile_id"])
@@ -684,7 +675,7 @@ class FireModel:
                 base_cls["days_to_fire"].notna() &
                 (base_cls["days_to_fire"] >= 0) &
                 (base_cls["days_to_fire"] <= H) &
-                (base_cls["nearest_fire_date"] <= base_cls["date_out"])  # пожар внутри жизни кучи
+                (base_cls["nearest_fire_date"] <= base_cls["date_out"])
         ).astype(int)
         base_cls["fire_within_7d"].value_counts()
         grp = base_cls.groupby(["Склад", "Штабель", "pile_id"])
@@ -789,5 +780,5 @@ class FireModel:
         })
 
         return res_cl
-# Глобальный экземпляр модели (заглушка)
+
 model = FireModel()

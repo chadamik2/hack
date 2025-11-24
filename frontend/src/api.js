@@ -1,4 +1,3 @@
-// src/api.js
 const API_BASE_URL = "http://localhost:8000";
 
 export async function uploadCsv(path, file) {
@@ -51,7 +50,6 @@ export async function evaluateFires(dateString, firesFile) {
   return res.json();
 }
 
-// НОВОЕ: классификатор на 7 дней
 export async function predictClassifier(dateString) {
   const res = await fetch(
     `${API_BASE_URL}/predict/classifier?date=${encodeURIComponent(dateString)}`

@@ -1,14 +1,3 @@
-# data/repository.py
-from typing import Literal
-
-import pandas as pd
-from sqlalchemy.engine import Engine
-from sqlalchemy.orm import Session
-from core.config import get_db
-
-from core.config import engine
-
-
 import pandas as pd
 from typing import Literal
 
@@ -20,7 +9,6 @@ from core.config import engine, get_db
 
 class DataRepository:
     def __init__(self):
-        # если потребуется сессия: self.db = next(get_db())
         self.db = get_db()
 
     @staticmethod
@@ -29,48 +17,34 @@ class DataRepository:
         table_name: Literal["supplies", "weather", "temperature", "fires"],
         engine_: Engine,
     ) -> int:
-        """
-        Добавляет в таблицу только новые строки (без дубликатов).
-        Дубликат = строка, у которой значения всех общих колонок
-        совпадают с уже существующей строкой в таблице.
-        Возвращает количество добавленных строк.
-        """
         if df.empty:
             return 0
 
-        # убираем дубли внутри самого файла
         df = df.drop_duplicates()
 
         inspector = inspect(engine_)
         table_names = inspector.get_table_names()
 
-        # если таблицы ещё нет – просто создаём её из df
         if table_name not in table_names:
             df.to_sql(table_name, engine_, if_exists="append", index=False)
             return len(df)
 
-        # таблица есть – читаем существующие данные
         try:
             existing = pd.read_sql_table(table_name, engine_)
         except Exception:
-            # если по какой-то причине не удалось прочитать – на всякий
             df.to_sql(table_name, engine_, if_exists="append", index=False)
             return len(df)
 
         if existing.empty:
-            # в таблице нет строк – можно просто вставить df
             df.to_sql(table_name, engine_, if_exists="append", index=False)
             return len(df)
 
-        # общие колонки между df и таблицей
         common_cols = [col for col in df.columns if col in existing.columns]
 
         if not common_cols:
-            # если общих колонок нет, нечем сравнивать – считаем всё новым
             df.to_sql(table_name, engine_, if_exists="append", index=False)
             return len(df)
 
-        # оставляем только строки, которых ещё нет в таблице
         existing_keys = existing[common_cols].drop_duplicates()
 
         merged = df.merge(

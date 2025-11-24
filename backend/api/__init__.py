@@ -1,4 +1,3 @@
-# api/__init__.py
 from fastapi import APIRouter
 
 from . import routes_upload, routes_predict, routes_metrics
