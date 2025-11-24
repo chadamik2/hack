@@ -535,7 +535,7 @@ class FireModel:
 
         mae = sklearn.metrics.mean_absolute_error(merged["true_days_to_fire"], merged["pred_days_to_fire"])
 
-        d = {"MAE" : mae}
+        d = mae
         return d
 
 

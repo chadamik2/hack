@@ -33,9 +33,6 @@ htmlcov/
 dist/
 build/
 
-# локальные базы данных
-db.sqlite3
-*.sqlite3
 
 # конфиги / секреты
 .env
