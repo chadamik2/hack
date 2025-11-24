@@ -4,3 +4,4 @@ pandas
 sqlalchemy
 catboost
 python-multipart
+scikit-learn

@@ -257,9 +257,7 @@ class FireModel:
         active_df = active_df.drop(columns=drop_cols, errors="ignore")
         cat_features = [c for c in ["Склад", "Штабель", "coal_type"] if c in X_train.columns]
 
-        from catboost import CatBoostRegressor
-
-        model = CatBoostRegressor(
+        model = catboost.CatBoostRegressor(
             iterations=500,
             depth=5,
             learning_rate=0.03,
@@ -508,15 +506,13 @@ class FireModel:
         active_df = active_df.drop(columns=drop_cols, errors="ignore")
         cat_features = [c for c in ["Склад", "Штабель", "coal_type"] if c in X_train.columns]
 
-        from catboost import CatBoostClassifier
         from sklearn.metrics import roc_auc_score, f1_score, accuracy_score
-        import numpy as np
         n0 = (y_train == 0).sum()
         n1 = (y_train == 1).sum()
         w0 = 1.0
         w1 = n0 / n1
         print(w0, w1)
-        modelCl = CatBoostClassifier(
+        modelCl = catboost.CatBoostClassifier(
             iterations=500,
             depth=6,
             learning_rate=0.03,
