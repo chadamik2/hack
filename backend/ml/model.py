@@ -244,11 +244,11 @@ class FireModel:
         inactive_df_cl = base_app[base_app["date_out"] < CURRENT_DATE]
         inactive_df_reg_sorted = inactive_df_reg.sort_values("date").reset_index(drop=True)
 
-        q50 = inactive_df_reg_sorted["date"].quantile(0.5)
-        q80 = inactive_df_reg_sorted["date"].quantile(0.8)
+        q1 = inactive_df_reg_sorted["date"].quantile(0.2)
+        q2 = inactive_df_reg_sorted["date"].quantile(0.8)
         train_main = inactive_df_reg_sorted[
-            (inactive_df_reg_sorted['date'] > q50) & (inactive_df_reg_sorted['date'] <= q80)]
-        val_main = inactive_df_reg_sorted[(inactive_df_reg_sorted['date'] > q80)]
+            (inactive_df_reg_sorted['date'] > q1) & (inactive_df_reg_sorted['date'] <= q2)]
+        val_main = inactive_df_reg_sorted[(inactive_df_reg_sorted['date'] > q2)]
         y_train = train_main["days_to_fire"]
         y_val = val_main['days_to_fire']
         drop_cols = ["days_to_fire", "nearest_fire_date", "date_in", "date_out", "pile_id", "date", "w", "pile_len",
@@ -482,11 +482,11 @@ class FireModel:
         inactive_df_cl = base_app[base_app["date_out"] < CURRENT_DATE]
         inactive_df_reg_sorted = inactive_df_reg.sort_values("date").reset_index(drop=True)
 
-        q50 = inactive_df_reg_sorted["date"].quantile(0.5)
-        q80 = inactive_df_reg_sorted["date"].quantile(0.8)
+        q1 = inactive_df_reg_sorted["date"].quantile(0.2)
+        q2 = inactive_df_reg_sorted["date"].quantile(0.8)
         train_main = inactive_df_reg_sorted[
-            (inactive_df_reg_sorted['date'] > q50) & (inactive_df_reg_sorted['date'] <= q80)]
-        val_main = inactive_df_reg_sorted[(inactive_df_reg_sorted['date'] > q80)]
+            (inactive_df_reg_sorted['date'] > q1) & (inactive_df_reg_sorted['date'] <= q2)]
+        val_main = inactive_df_reg_sorted[(inactive_df_reg_sorted['date'] > q2)]
         y_train = train_main["days_to_fire"]
         y_val = val_main['days_to_fire']
         drop_cols = ["days_to_fire", "nearest_fire_date", "date_in", "date_out", "pile_id", "date", "w", "pile_len",
@@ -535,7 +535,8 @@ class FireModel:
 
         mae = sklearn.metrics.mean_absolute_error(merged["true_days_to_fire"], merged["pred_days_to_fire"])
 
-        return mae
+        d = {"MAE" : mae}
+        return d
 
 
     def predict_classificator(self, date: datetime.date) -> pd.DataFrame:
@@ -714,11 +715,11 @@ class FireModel:
         inactive_df_cl = base_app[base_app["date_out"] < CURRENT_DATE]
 
         inactive_df_cl_sorted = inactive_df_cl.sort_values("date").reset_index(drop=True)
-        q50 = inactive_df_cl_sorted["date"].quantile(0.5)
-        q80 = inactive_df_cl_sorted["date"].quantile(0.8)
+        q1 = inactive_df_cl_sorted["date"].quantile(0.2)
+        q2 = inactive_df_cl_sorted["date"].quantile(0.8)
         train_main = inactive_df_cl_sorted[
-            (inactive_df_cl_sorted['date'] > q50) & (inactive_df_cl_sorted['date'] <= q80)]
-        val_main = inactive_df_cl_sorted[(inactive_df_cl_sorted['date'] > q80)]
+            (inactive_df_cl_sorted['date'] > q1) & (inactive_df_cl_sorted['date'] <= q2)]
+        val_main = inactive_df_cl_sorted[(inactive_df_cl_sorted['date'] > q2)]
         y_train = train_main["fire_within_7d"]
         y_val = val_main["fire_within_7d"]
         drop_cols = [
@@ -785,6 +786,11 @@ class FireModel:
             "Штабель": "stack_id",
             "fire_within_7d": "will_burn"
         })
+
+        res_cl["will_burn"] = (
+                pd.to_datetime(CURRENT_DATE)
+                + pd.to_timedelta(res_cl["days_to_fire"], unit="D")
+        )
 
         return res_cl
 # Глобальный экземпляр модели (заглушка)
