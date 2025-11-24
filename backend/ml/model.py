@@ -332,7 +332,11 @@ class FireModel:
 
         active_df["days_to_fire"] = pred_days
 
-        return active_df
+        res = (
+            active_df.groupby("Штабель", as_index=False)["days_to_fire"]
+            .min()
+        )
+        return res
 
 
     def predict_and_compare(
