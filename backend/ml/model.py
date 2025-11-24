@@ -294,7 +294,7 @@ class FireModel:
             self,
             date: datetime.date,
             fires: pd.DataFrame,
-    ) -> Dict[str, Any]:
+    ):
         data = self._load_feature_data()
         fires = data["fires"]
         temperature = data["temperature"]
@@ -538,8 +538,7 @@ class FireModel:
 
         mae = mean_absolute_error(merged["true_days_to_fire"], merged["pred_days_to_fire"])
 
-        d = {"MAE" : mae}
-        return d
+        return mae
 
 
     def predict_classificator(self, date: datetime.date) -> pd.DataFrame:
