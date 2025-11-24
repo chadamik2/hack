@@ -5,6 +5,7 @@ from typing import Dict, Any
 from fastapi import APIRouter, HTTPException, Query
 from ml.service import run_fire_prediction_for_date
 from ml.model import FireModel, model  # адаптируй имя под свой класс
+import pandas as pd
 
 router = APIRouter(prefix="/predict", tags=["predict"])
 
@@ -93,8 +94,14 @@ def predict_classifier(
             detail="Неверный формат даты. Ожидается YYYY-MM-DD.",
         )
 
+    pr = model.predict_classificator(target_date)
     # модель уже реализована в FireModel
-    raw_predictions = model.predict_classificator(target_date)
+    raw_predictions = (
+        pr.set_index("stack_id")           # делаем stack_id индексом
+        ["will_burn"]                    # берём колонку с признаком
+        .astype(bool)                    # приводим к bool (1/0 -> True/False)
+        .to_dict()                       # -> {stack_id: bool}
+    )
 
     # ожидаем dict-like {stack_id: bool/0/1}
     if not isinstance(raw_predictions, dict):

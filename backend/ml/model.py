@@ -48,10 +48,7 @@ class FireModel:
             "fires": fires,
         }
 
-    def train(self, supplies: pd.DataFrame,
-                                 temperature: pd.DataFrame,
-                                 weather: pd.DataFrame,
-                                    fires: pd.DataFrame):
+    def train(self):
         pass
 
     def predict(self, date: datetime.date) -> pd.DataFrame:
@@ -96,11 +93,22 @@ class FireModel:
         # 1. Загружаем features из БД
         data = self._load_feature_data()
 
+        repo.upload_fires(fires)
+
 
         return {
             "accuracy_le_2_days": 1.0
         }
 
 
+    def predict_classificator(self, date: datetime.date) -> pd.DataFrame:
+        df = pd.DataFrame (
+            {
+            "stack_id": [101, 102, 103],
+            "will_burn": [1, 0, 1],
+            }
+        )
+
+        return df
 # Глобальный экземпляр модели (заглушка)
 model = FireModel()
