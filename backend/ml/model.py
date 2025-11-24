@@ -538,7 +538,8 @@ class FireModel:
 
         mae = mean_absolute_error(merged["true_days_to_fire"], merged["pred_days_to_fire"])
 
-        return mae
+        d = {"MAE" : mae}
+        return d
 
 
     def predict_classificator(self, date: datetime.date) -> pd.DataFrame:
@@ -791,6 +792,11 @@ class FireModel:
             "Штабель": "stack_id",
             "fire_within_7d": "will_burn"
         })
+
+        res_cl["will_burn"] = (
+                pd.to_datetime(CURRENT_DATE)
+                + pd.to_timedelta(res_cl["days_to_fire"], unit="D")
+        )
 
         return res_cl
 # Глобальный экземпляр модели (заглушка)
